@@ -1,0 +1,36 @@
+{
+	"$schema": "../../../@schemas/model-json-schema.json#",
+	"schema": "a2v10sample",
+	"model": "Document",
+	"actions": {
+		"index": {
+			"index": true,
+			"template": "index.template",
+			"view": "index.view",
+			"parameters": {
+				"Kind": "Waybill"
+			}
+		},
+		"edit": {
+			"template": "edit.template",
+			"view": "edit.view",
+			"parameters": {
+				"Kind": "Waybill"
+			},
+			"export": {
+				"format": "xlsx",
+				"template": "waybill.xlsx",
+				"fileName": "Waybill"
+			}
+		}
+	},
+	"dialogs": {
+		"editDialog": {
+			"template": "edit.template",
+			"view": "edit.dialog",
+			"parameters": {
+				"Kind": "Waybill"
+			}
+		}
+	}
+}

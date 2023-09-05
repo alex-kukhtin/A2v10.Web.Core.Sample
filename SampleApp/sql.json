@@ -1,0 +1,20 @@
+[
+	{
+		"$schema": "@schemas/sql-json-schema.json#",
+		"name": "full",
+		"version": "10.0.0021",
+		"outputFile": "_sqlscripts/sample_full.sql",
+		"inputFiles": [
+			"@sql/legacy/a2v10platform.sql",
+			"@sql/legacy/a2v10admin.sql",
+			"_sql/schemas.sql",
+			"_sql/tables.sql",
+			"_sql/types.sql",
+			"_sql/ui.sql",
+			"catalog/agent/model.sql",
+			"catalog/product/model.sql",
+			"catalog/product/import.sql",
+			"document/model.sql"
+		]
+	}
+]

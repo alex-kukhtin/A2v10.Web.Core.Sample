@@ -1,0 +1,40 @@
+{
+	"$schema": "../../../@schemas/model-json-schema.json#",
+	"schema": "a2v10sample",
+	"model": "Product",
+	"imageSettings": {
+		"Picture": {
+			"quality": 10,
+			"threshold": 5
+		}
+	},
+	"actions": {
+		"index": {
+			"index": true,
+			"template": "index.template",
+			"view": "index.view"
+		}
+	},
+	"dialogs": {
+		"edit": {
+			"template": "edit.template",
+			"view": "edit.dialog"
+		},
+		"browse": {
+			"index": true,
+			"view": "browse.dialog"
+		},
+		"import": {
+			"model": "",
+			"template": "import.template",
+			"view": "import.dialog"
+		}
+	},
+	"files": {
+		"import": {
+			"type": "parse",
+			"parse": "xlsx",
+			"model": "Product.Import"
+		}
+	}
+}
