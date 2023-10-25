@@ -15,6 +15,7 @@
 @hover-index: auto;
 */
 /* @modal-wrapper-index + 2 */
+/* validator + 1*/
 /* marker */
 /* grid */
 /* mixins */
@@ -23,7 +24,7 @@
   font-family: 'A2v10';
   font-display: fallback;
   src: url('/css/fonts/A2v10.eot');
-  src: url('/css/fonts/A2v10.eot?#iefix') format('eot'), url('/css/fonts/A2v10.woff?v=7945') format('woff'), url('/css/fonts/A2v10.ttf?v=7945') format('truetype'), url('/css/fonts/A2v10.svg#A2v10') format('svg');
+  src: url('/css/fonts/A2v10.eot?#iefix') format('eot'), url('/css/fonts/A2v10.woff?v=7946') format('woff'), url('/css/fonts/A2v10.ttf?v=7946') format('truetype'), url('/css/fonts/A2v10.svg#A2v10') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -708,6 +709,9 @@
 .ico-clip:before {
   content: "\e917";
 }
+.ico-lead:before {
+  content: "\e918";
+}
 .ico-user:before {
   content: "\e998";
 }
@@ -888,6 +892,7 @@
 @hover-index: auto;
 */
 /* @modal-wrapper-index + 2 */
+/* validator + 1*/
 /* marker */
 /* grid */
 * {
@@ -2806,8 +2811,18 @@ pre.a2-code {
   background-color: var(--bgControl);
   z-index: 1071;
 }
+.date-picker .input-group .month-wrapper {
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  padding: 0 5px;
+  white-space: nowrap;
+}
 .period-picker {
   cursor: pointer;
+}
+.period-picker.disabled {
+  cursor: default;
 }
 .period-picker .period-text {
   padding: 0 0 0 5px;
@@ -3453,7 +3468,7 @@ table.data-grid > tbody > tr.bold > td {
   height: auto;
 }
 .toolbar .checkbox {
-  margin: 0 6px;
+  margin: 1px 6px 0 6px;
 }
 .toolbar.no-wrap {
   flex-wrap: nowrap;
@@ -3954,6 +3969,7 @@ tr:hover .commandbar.visible-hover {
   border-bottom: 3px solid var(--neutral300);
   align-items: baseline;
   margin: 0.65rem 0;
+  color: var(--text);
 }
 .a2-tab-bar-item:first-child {
   padding-left: 0;
@@ -3966,10 +3982,13 @@ tr:hover .commandbar.visible-hover {
   padding: 0.65rem 0;
   color: var(--text);
 }
+.a2-tab-button:hover {
+  text-shadow: 0.5px 0 0 var(--text);
+  color: var(--text);
+}
 .a2-tab-button.active {
   border-bottom-color: var(--text);
-  color: var(--text);
-  font-weight: 500;
+  text-shadow: 0.5px 0 0 var(--text);
 }
 .a2-tab-button .content {
   white-space: nowrap;
@@ -4847,7 +4866,7 @@ table.hover > tbody > tr.active:hover {
 }
 .a2-table > thead,
 .a2-table > tfoot {
-  line-height: 2rem;
+  line-height: 1;
 }
 .a2-table > thead > tr,
 .a2-table > tfoot > tr {
@@ -4855,7 +4874,7 @@ table.hover > tbody > tr.active:hover {
 }
 .a2-table > thead > tr > td,
 .a2-table > tfoot > tr > td {
-  padding: 0 6px;
+  padding: 8px 6px;
   background-color: var(--neutral100);
   border-color: var(--neutral300);
 }
@@ -4872,6 +4891,9 @@ table.hover > tbody > tr.active:hover {
 }
 .a2-table td.ctrl .stack-panel.horizontal .control-group + .control-group {
   border-left: 1px solid var(--neutral300);
+}
+.a2-table td.ctrl .input-group.static {
+  line-height: 2em;
 }
 .a2-table td.marker-cell {
   padding: 0 !important;
@@ -5794,7 +5816,7 @@ TODO:
   color: var(--text);
 }
 .a2-state-card.a2-state-card-styled {
-  color: white;
+  color: #000000a0;
 }
 .a2-state-card.a2-state-card-styled .a2-card-icon {
   color: hsla(0, 0%, 100%, 0.25);
@@ -5804,19 +5826,19 @@ TODO:
   border: 1px solid hsla(0, 0%, 100%, 0.25);
 }
 .a2-state-card.a2-state-card-yellow {
-  background-color: #ffb74d;
+  background-color: #ffb74d42;
 }
 .a2-state-card.a2-state-card-green {
-  background-color: #5db750;
+  background-color: #5db75042;
 }
 .a2-state-card.a2-state-card-cyan {
-  background-color: #60bbe5;
+  background-color: #60bbe542;
 }
 .a2-state-card.a2-state-card-red {
-  background-color: #da533f;
+  background-color: #da533f42;
 }
 .a2-state-card.a2-state-card-primary {
-  background-color: #3470b4;
+  background-color: #3470b442;
 }
 .a2-state-card.compact .a2-state-card-text {
   font-size: 150%;
@@ -6683,7 +6705,7 @@ table > colgroup col.blue {
   top: 40px;
   bottom: 2rem;
   right: 0;
-  z-index: 78;
+  z-index: 1031;
   background-color: var(--bgPrimary);
   box-shadow: -5px 0 10px 0 rgba(0, 0, 0, 0.2);
 }
@@ -6789,7 +6811,7 @@ table > colgroup col.blue {
   margin: 0;
   overflow: auto;
   width: 100%;
-  max-width: calc(100vw - 96px);
+  max-width: calc(100vw - 116px);
 }
 .mdi-tabs-container .mdi-tabs::-webkit-scrollbar {
   height: 4px;
@@ -6839,12 +6861,19 @@ table > colgroup col.blue {
 .mdi-tabs-container .mdi-tabs li .close:hover {
   background-color: var(--neutral300);
 }
+.mdi-tabs-container .mdi-tabs li:hover {
+  text-shadow: 0.5px 0 0 var(--text);
+}
 .mdi-tabs-container .mdi-tabs li:hover .close {
   visibility: visible;
 }
 .mdi-tabs-container .mdi-tabs li.active {
+  text-shadow: 0.5px 0 0 var(--text);
   background-color: var(--bgPrimary);
   border-bottom-color: transparent;
+  box-shadow: 0 0 5px #bbb;
+  border-right-color: transparent;
+  z-index: 2;
 }
 .mdi-tabs-container .mdi-tabs li.active .close {
   visibility: visible;
@@ -7471,7 +7500,7 @@ table.tree-grid a.toggle.expanded:after {
 }
 .color-picker .color-picker-pane {
   position: absolute;
-  z-index: 78;
+  z-index: 1031;
   background: white;
   top: 100%;
   width: 100%;

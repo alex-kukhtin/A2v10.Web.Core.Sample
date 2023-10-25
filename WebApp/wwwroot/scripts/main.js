@@ -143,9 +143,9 @@ app.modules['std:locale'] = function () {
 
 
 
-// Copyright © 2015-2020 Alex Kukhtin. All rights reserved.
+// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
-/*20200722-7691*/
+/*20231005-7950*/
 /* platform/webvue.js */
 
 (function () {
@@ -198,7 +198,7 @@ app.modules['std:const'] = function () {
 
 // Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
-// 20230814-7943
+// 20230922-7948
 // services/utils.js
 
 app.modules['std:utils'] = function () {
@@ -236,16 +236,16 @@ app.modules['std:utils'] = function () {
 		notBlank,
 		toJson,
 		fromJson: JSON.parse,
-		isPrimitiveCtor: isPrimitiveCtor,
+		isPrimitiveCtor,
 		isDateCtor,
 		isEmptyObject,
 		defineProperty: defProperty,
 		eval: evaluate,
-		simpleEval: simpleEval,
+		simpleEval,
 		format: format,
 		convertToString,
 		toNumber,
-		parse: parse,
+		parse,
 		getStringId,
 		isEqual,
 		ensureType,
@@ -440,7 +440,7 @@ app.modules['std:utils'] = function () {
 		for (let i = 0; i < ps.length; i++) {
 			let pi = ps[i];
 			if (!(pi in r))
-				throw new Error(`Property '${pi}' not found in ${r.constructor.name} object`);
+				return '';
 			r = r[ps[i]];
 		}
 		return r;
@@ -991,7 +991,7 @@ app.modules['std:utils'] = function () {
 
 	function currencyRound(n, digits) {
 		if (isNaN(n))
-			return Nan;
+			return NaN;
 		if (!isDefined(digits))
 			digits = 2;
 		let m = false;
@@ -1968,9 +1968,9 @@ app.modules['std:http'] = function () {
 
 
 
-// Copyright © 2015-2022 Alex Kukhtin. All rights reserved.
+// Copyright © 2015-2023 Alex Kukhtin. All rights reserved.
 
-// 20221124-7907
+// 20231005-7950
 /* platform/routex.js */
 
 (function () {
@@ -2129,11 +2129,16 @@ app.modules['std:http'] = function () {
 		return replaceUrlSearch(url, urlTools.makeQueryString(query));
 	}
 
+	function replaceBrowseUrl(newUrl) {
+		window.history.replaceState(null, null, newUrl);
+	}
+
 	store.parseQueryString = urlTools.parseQueryString;
 	store.makeQueryString = urlTools.makeQueryString;
 	store.replaceUrlSearch = replaceUrlSearch;
 	store.replaceUrlQuery = replaceUrlQuery;
 	store.makeBackUrl = makeBackUrl;
+	store.replaceBrowseUrl = replaceBrowseUrl;
 
 	app.components['std:store'] = store;
 })();
@@ -2406,7 +2411,7 @@ app.modules['std:validators'] = function () {
 
 // Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
-/*20230807-7941*/
+/*20230922-7948*/
 /* services/impl/array.js */
 
 app.modules['std:impl:array'] = function () {
@@ -2457,6 +2462,16 @@ app.modules['std:impl:array'] = function () {
 			}
 			return null;
 		}
+
+		/* generator */
+		arr.$allItems = function* () {
+			for (let i = 0; i < this.length; i++) {
+				let el = this[i];
+				yield el;
+				if ('$items' in el)
+					yield* el.$items.$allItems();
+			}
+		};
 
 		arr.$sort = function (compare) {
 			this.sort(compare);
@@ -5989,7 +6004,7 @@ Vue.component('validator-control', {
 })();
 // Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
-// 20230810-7942
+// 20230911-7946
 // components/datepicker.js
 
 (function () {
@@ -6008,7 +6023,8 @@ Vue.component('validator-control', {
 <div :class="cssClass2()" class="date-picker" :test-id="testId">
 	<label v-if="hasLabel"><span v-text="label"/><slot name="hint"/><slot name="link"></slot></label>
 	<div class="input-group"  @click="clickInput($event)">
-		<input v-focus v-model.lazy="model" :class="inputClass" :disabled="inputDisabled"/>
+		<input v-focus v-model.lazy="model" v-if="!isMonth" :class="inputClass" :readonly="inputDisabled"/>
+		<div class="month-wrapper" v-if=isMonth v-text=model></div>
 		<a href @click.stop.prevent="toggle($event)" tabindex="-1"><i class="ico ico-calendar"></i></a>
 		<validator :invalid="invalid" :errors="errors" :options="validatorOptions"></validator>
 		<div class="calendar" v-if="isOpen">		
@@ -6111,6 +6127,9 @@ Vue.component('validator-control', {
 		computed: {
 			modelDate() {
 				return this.item[this.prop];
+			},
+			isMonth() {
+				return this.view === 'month';
 			},
 			inputDisabled() {
 				return this.disabled || this.view === 'month';
@@ -6598,7 +6617,7 @@ Vue.component('validator-control', {
 })();
 // Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
-// 20230705-7939
+// 20231001-7949
 // components/periodpicker.js
 
 
@@ -6618,7 +6637,7 @@ Vue.component('validator-control', {
 	Vue.component('a2-period-picker', {
 		extends: baseControl,
 		template: `
-<div class="control-group period-picker" @click.stop.prevent="toggle($event)" :class="{open: isOpen}">
+<div class="control-group period-picker" @click.stop.prevent="toggle($event)" :class="{open: isOpen, disabled: disabled}">
 	<label v-if="hasLabel"><span v-text="label"/><slot name="hint"/></label>
 	<div class="input-group">
 		<span class="period-text" v-text="text" :class="inputClass" :tabindex="tabIndex"/>
@@ -6792,6 +6811,7 @@ Vue.component('validator-control', {
 				if (!this.isOpen) {
 					// close other popups
 					eventBus.$emit('closeAllPopups');
+					if (this.disabled) return;
 					this.modelDate = this.period.To; // TODO: calc start month
 					if (this.modelDate.isZero() || this.modelDate.getTime() === du.maxDate.getTime())
 						this.modelDate = du.today();
@@ -6849,7 +6869,7 @@ Vue.component('validator-control', {
 
 // Copyright © 2015-2023 Alex Kukhtin. All rights reserved.
 
-/*20230613-7937*/
+/*20230613-7948*/
 // components/selector.js
 
 (function selector_component() {
@@ -6916,6 +6936,7 @@ Vue.component('validator-control', {
 			placement: String,
 			caret: Boolean,
 			hasClear: Boolean,
+			useAll: Boolean,
 			mode: String,
 			fetchCommand: String,
 			fetchCommandData: Object,
@@ -6956,6 +6977,7 @@ Vue.component('validator-control', {
 				if (!to) return false;
 				if (utils.isDefined(to.$isEmpty))
 					return !to.$isEmpty;
+				if (this.useAll && to.Id === -1) return false;
 				return !utils.isPlainObjectEmpty(to);
 			},
 			hasText() { return !!this.textProp; },
@@ -7154,6 +7176,12 @@ Vue.component('validator-control', {
 				this.isOpen = false;
 				this.isOpenNew = false;
 				let obj = this.item[this.prop];
+				if (!obj) return;
+				if (this.useAll) {
+					obj.Id = -1;
+					obj.Name = '';
+					return;
+				} 
 				if (obj.$empty)
 					obj.$empty();
 				else if (utils.isObjectExact(obj))
@@ -8439,9 +8467,9 @@ Vue.component('popover', {
 	}
 });
 
-// Copyright © 2015-2022 Alex Kukhtin. All rights reserved.
+// Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
-/*20220627-7853*/
+/*20230924-7948*/
 // components/treeview.js
 
 (function () {
@@ -8484,7 +8512,7 @@ Vue.component('popover', {
 			getHref: Function,
 			doubleclick: Function
 		},
-		data() { 
+		data() {
 			return {
 				_toggling: false
 			};
@@ -8532,7 +8560,7 @@ Vue.component('popover', {
 			expandItem(val) {
 				platform.set(this.item, '$expanded', val);
 			},
-			openElem: function() {
+			openElem: function () {
 				if (!this.isFolder)
 					return;
 				this.expandItem(true);
@@ -8617,7 +8645,7 @@ Vue.component('popover', {
 		},
 		created() {
 			if (this.options.initialExpand)
-			platform.set(this.item, '$expanded', true);
+				platform.set(this.item, '$expanded', true);
 		}
 	};
 
@@ -12776,7 +12804,7 @@ Vue.directive('disable', {
 	});
 
 })();
-// Copyright © 2015-2019 Alex Kukhtin. All rights reserved.
+// Copyright © 2015-2019 Oleksandr Kukhtin. All rights reserved.
 
 /*20190721-7507*/
 /* directives/focus.js */
@@ -13130,7 +13158,7 @@ Vue.directive('resize', {
 
 // Copyright © 2015-2023 Oleksandr Kukhtin. All rights reserved.
 
-/*20230830-7947*/
+/*20231005-7950*/
 // controllers/base.js
 
 (function () {
@@ -13571,7 +13599,7 @@ Vue.directive('resize', {
 						// special element -> use url
 						dataToQuery.baseUrl = urltools.replaceUrlQuery(self.$baseUrl, dat.Query);
 						let newUrl = urltools.replaceUrlQuery(null/*current*/, dat.Query);
-						window.history.replaceState(null, null, newUrl);
+						store.replaceBrowseUrl(newUrl);
 					}
 					let jsonData = utils.toJson(dataToQuery);
 					dataservice.post(url, jsonData).then(function (data) {
@@ -13704,7 +13732,7 @@ Vue.directive('resize', {
 				}
 			},
 
-			$file(url, arg, opts) {
+			$file(url, arg, opts, dat) {
 				eventBus.$emit('closeAllPopups');
 				const root = window.$$rootUrl;
 				let id = arg;
@@ -13715,7 +13743,7 @@ Vue.directive('resize', {
 						token = arg[arg._meta_.$token];
 				}
 				let fileUrl = urltools.combine(root, '_file', url, id);
-				let qry = {};
+				let qry = dat || {};
 				let action = (opts || {}).action;
 				if (token)
 					qry.token = token;

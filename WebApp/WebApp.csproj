@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
@@ -18,7 +18,7 @@
 	</PropertyGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="A2v10.Platform" Version="10.1.8151" />
-		<PackageReference Include="A2v10.Web.Assets" Version="10.1.8151" />
+		<PackageReference Include="A2v10.Platform" Version="10.1.8166" />
+		<PackageReference Include="A2v10.Web.Assets" Version="10.1.8165" />
 	</ItemGroup>
 </Project>

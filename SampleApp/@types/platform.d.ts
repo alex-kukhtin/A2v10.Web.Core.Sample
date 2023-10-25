@@ -1,7 +1,7 @@
 ﻿
 /* Copyright © 2019-2023 Oleksandr Kukhtin. All rights reserved. */
 
-/* Version 10.0.7940 */
+/* Version 10.0.7948 */
 
 declare function require(url: string): any;
 
@@ -114,6 +114,7 @@ interface IElementArray<T> extends Array<T> {
 	$renumberRows(): IElementArray<T>;
 	$copy(src: any[]): IElementArray<T>;
 	$sum(fn: (item: T) => number): number;
+	$allItems(): Generator<T>;
 }
 
 interface IRoot extends IElement {
@@ -329,7 +330,7 @@ interface IViewModel extends IController {
 	$setCurrentUrl(url: string): void;
 	$export(arg: any, url: string, data?: any, opts?: { saveRequired: boolean }): void;
 	$navigateSimple(url: string, data?: object, newWindow?: boolean, updateAfter?: IElementArray<IElement>): void;
-	$file(url: string, arg: any, opts?: { action: FileActions }): void;
+	$file(url: string, arg: any, opts?: { action: FileActions }, data?: object): void;
 }
 
 // utilities
