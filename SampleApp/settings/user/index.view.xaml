@@ -1,0 +1,23 @@
+﻿<!-- user.index.view -->
+<Partial xmlns="clr-namespace:A2v10.Xaml;assembly=A2v10.Xaml">
+	<CollectionView  RunAt="Server"
+			ItemsSource="{Bind Users}" Filter="Fragment">
+		<Grid Rows="Auto,1*,Auto" Height="100%" AlignItems="Stretch" Padding="0">
+			<Toolbar Grid.Row="1">
+				<Button Icon="Add" Command="{BindCmd Execute, CommandName=createUser}"/>
+				<Button Icon="Edit" Command="{BindCmd Dialog, Action=EditSelected, Argument={Bind Users}, 
+					Url='/settings/user/edit'}"/>
+				<Separator />
+				<Button Icon="Reload" Command="{BindCmd Reload}"/>
+			</Toolbar>
+			<DataGrid Grid.Row="2" ItemsSource="{Bind Parent.ItemsSource}">
+				<DataGridColumn Header ="#" Role="Id" Content="{Bind Id}" />
+				<DataGridColumn Header ="Логін" Content="{Bind UserName}" />
+				<DataGridColumn Header ="П.І.Б" Content="{Bind PersonName}" />
+				<DataGridColumn Header ="Створений" Content="{Bind DateCreated, DataType=DateTime}" Role="Date"/>
+				<DataGridColumn Header ="@[Memo]" Content="{Bind Memo}" />
+			</DataGrid>
+			<Pager Grid.Row="3" Source="{Bind Parent.Pager}"/>
+		</Grid>
+	</CollectionView>
+</Partial>

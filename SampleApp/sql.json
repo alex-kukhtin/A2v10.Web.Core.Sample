@@ -14,7 +14,8 @@
 			"catalog/agent/model.sql",
 			"catalog/product/model.sql",
 			"catalog/product/import.sql",
-			"document/model.sql"
+			"document/model.sql",
+			"settings/settings.sql"
 		]
 	}
 ]

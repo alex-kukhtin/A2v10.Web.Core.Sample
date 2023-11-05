@@ -9,11 +9,28 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="settings\index.view.xaml" />
+	  <None Remove="settings\user\index.view.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="A2v10.App.Assets" Version="10.1.8164" />
 		<PackageReference Include="A2v10.Sql.MSBuild" Version="10.1.8102" />
 		<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.2.2">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="settings\index.view.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="settings\user\index.view.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Content>
 	</ItemGroup>
 </Project>

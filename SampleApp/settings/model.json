@@ -1,0 +1,12 @@
+{
+	"$schema": "../../../@schemas/model-json-schema.json#",
+	"schema": "adm",
+	"model": "Settings.Menu",
+	"actions": {
+		"index": {
+			"roles": [ "Admin" ],
+			"index": true,
+			"view": "index.view"
+		}
+	}
+}

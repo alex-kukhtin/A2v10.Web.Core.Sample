@@ -1,0 +1,13 @@
+{
+	"$schema": "../../../@schemas/model-json-schema.json#",
+	"schema": "adm",
+	"model": "User",
+	"roles": [ "Admin" ],
+	"actions": {
+		"index": {
+			"index": true,
+			"template": "index.template",
+			"view": "index.view"
+		}
+	}
+}

@@ -41,3 +41,6 @@ begin
 	exec a2security.[Permission.UpdateAcl.Menu];
 end
 go
+
+
+
