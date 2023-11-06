@@ -10,7 +10,8 @@
 				<Separator />
 				<Button Icon="Reload" Command="{BindCmd Reload}"/>
 			</Toolbar>
-			<DataGrid Grid.Row="2" ItemsSource="{Bind Parent.ItemsSource}">
+			<DataGrid Grid.Row="2" ItemsSource="{Bind Parent.ItemsSource}"
+					  Style="Light" GridLines="Horizontal">
 				<DataGridColumn Header ="#" Role="Id" Content="{Bind Id}" />
 				<DataGridColumn Header ="Логін" Content="{Bind UserName}" />
 				<DataGridColumn Header ="П.І.Б" Content="{Bind PersonName}" />

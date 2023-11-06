@@ -1007,7 +1007,6 @@ begin
 	alter table a2security.Referrals add constraint DF_Referrals_DateCreated2 default(a2sys.fn_getCurrentDate()) for DateCreated with values;
 end
 go
-
 ------------------------------------------------
 if not exists(select * from INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS where CONSTRAINT_SCHEMA = N'a2security' and CONSTRAINT_NAME = N'FK_Users_Referral_Referrals')
 begin
@@ -1015,13 +1014,7 @@ begin
 end
 go
 ------------------------------------------------
-if exists(select * from INFORMATION_SCHEMA.VIEWS where TABLE_SCHEMA=N'a2security' and TABLE_NAME=N'ViewUsers')
-begin
-	drop view a2security.ViewUsers;
-end
-go
-------------------------------------------------
-create view a2security.ViewUsers
+create or alter view a2security.ViewUsers
 as
 	select Id, UserName, DomainUser, PasswordHash, SecurityStamp, Email, PhoneNumber,
 		LockoutEnabled, AccessFailedCount, LockoutEndDateUtc, TwoFactorEnabled, [Locale],
@@ -1029,7 +1022,9 @@ as
 		PhoneNumberConfirmed, RegisterHost, ChangePasswordEnabled, TariffPlan, Segment,
 		IsAdmin = cast(case when ug.GroupId = 77 /*predefined: admins*/ then 1 else 0 end as bit),
 		IsTenantAdmin = cast(case when exists(select * from a2security.Tenants where [Admin] = u.Id) then 1 else 0 end as bit),
-		SecurityStamp2, PasswordHash2, Company, SetPassword
+		SecurityStamp2, PasswordHash2, Company, SetPassword,
+		Roles = (select string_agg(r.[Key], N',') 
+			from a2security.UserRoles ur inner join a2security.Roles r on ur.RoleId = r.Id where ur.UserId = u.Id)
 	from a2security.Users u
 		left join a2security.UserGroups ug on u.Id = ug.UserId and ug.GroupId=77 /*predefined: admins*/
 	where Void=0 and Id <> 0 and ApiUser = 0;
@@ -1058,7 +1053,7 @@ returns bit
 as
 begin
 	return case when 
-		exists(select * from a2security.UserGroups where GroupId=77 /*predefined: admins */ and UserId = @UserId) then 1 
+		exists(select * from a2security.UserRoles where RoleId=99 /*predefined: Admin */ and UserId = @UserId) then 1 
 	else 0 end;
 end
 go
@@ -1773,8 +1768,7 @@ begin
 	when matched then update set
 		[Name]=s.[Name]
 	when not matched by target then insert 
-		(Code, [Name]) values (s.Code, s.[Name])
-	when not matched by source then delete;
+		(Code, [Name]) values (s.Code, s.[Name]);
 end
 go
 ------------------------------------------------
@@ -4213,9 +4207,15 @@ go
 
 ------------------------------------------------
 if not exists(select * from INFORMATION_SCHEMA.SCHEMATA where SCHEMA_NAME=N'a2v10sample')
-begin
 	exec sp_executesql N'create schema a2v10sample';
-end
+go
+------------------------------------------------
+if not exists(select * from INFORMATION_SCHEMA.SCHEMATA where SCHEMA_NAME=N'adm')
+	exec sp_executesql N'create schema adm';
+go
+------------------------------------------------
+grant execute on schema::a2v10sample to public;
+grant execute on schema::adm to public;
 go
 
 ------------------------------------------------
@@ -5341,3 +5341,59 @@ begin
 	commit tran;
 end
 go
+------------------------------------------------
+create or alter procedure adm.[Settings.Menu.Index]
+@UserId bigint
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	select [Menu!TMenu!Array] = null, [Id!!Id] = 1, [Name] = N'@[Users]', [Url] = N'/settings/user/index';
+
+end
+go
+------------------------------------------------
+create or alter procedure adm.[User.Index]
+@UserId bigint
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	select [Users!TUser!Array] = null, [Id!!Id] = Id, UserName, PersonName, PhoneNumber, Memo, DateCreated
+	from a2security.Users
+	where Void = 0 and Id <> 0
+	order by Id;
+end
+go
+------------------------------------------------
+create or alter procedure adm.[User.Create.Load]
+@UserId bigint,
+@Id bigint = null
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	select [User!TUser!Object] = null, [Id!!Id] = Id, UserName, PersonName, PhoneNumber, Memo,
+		[Password] = cast(null as nvarchar(255)), Confirm = cast(null as nvarchar(255))
+	from a2security.Users
+	where Id = @Id;
+end
+go
+------------------------------------------------
+create or alter procedure adm.[User.Load]
+@UserId bigint,
+@Id bigint = null
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	select [User!TUser!Object] = null, [Id!!Id] = Id, UserName, PersonName, PhoneNumber, Memo
+	from a2security.Users
+	where Id = @Id;
+end
+go
+

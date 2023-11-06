@@ -9,5 +9,23 @@
 			"template": "index.template",
 			"view": "index.view"
 		}
+	},
+	"dialogs": {
+		"create": {
+			"model": "User.Create",
+			"template": "create.template",
+			"view": "create.dialog"
+		},
+		"edit": {
+			"template": "edit.template",
+			"view": "edit.dialog"
+		}
+	},
+	"commands": {
+		"createUser": {
+			"type": "clr",
+			"clrType": "clr-type:A2v10.Identity.UI.CreateUserHandler;assembly=A2v10.Identity.UI",
+			"async": true
+		}
 	}
 }
