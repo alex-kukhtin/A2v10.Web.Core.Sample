@@ -1,9 +1,10 @@
 ﻿/*
 Copyright © 2008-2023 Oleksandr Kukhtin
 
-Last updated : 05 aug 2023
-module version : 8134
+Last updated : 08 dec 2023
+module version : 8190
 */
+
 -- SECURITY
 ------------------------------------------------
 create or alter procedure a2security.FindUserById
@@ -172,6 +173,46 @@ begin
 end
 go
 ------------------------------------------------
+create or alter procedure a2security.FindUserByExternalLogin
+@LoginProvider nvarchar(255),
+@ProviderKey nvarchar(1024)
+as
+begin
+	set nocount on;
+	set transaction isolation level read uncommitted;
+
+	declare @userId bigint;
+	select @userId = [User] from a2security.ExternalUserLogins e
+	where LoginProvider=@LoginProvider and ProviderKey = @ProviderKey;
+
+	update a2security.Users set LastLoginDate = getutcdate() where Id = @userId;
+
+	select u.* from a2security.ViewUsers u
+	where Id = @userId
+end
+go
+------------------------------------------------
+create or alter procedure a2security.[User.AddExternalLogin]
+@Tenant int = 1,
+@Id bigint,
+@LoginProvider nvarchar(255),
+@ProviderKey nvarchar(1024)
+as
+begin
+	set nocount on;
+	set transaction isolation level read committed;
+	set xact_abort on;
+
+	begin tran;
+	delete from a2security.ExternalUserLogins where 
+		Tenant = @Tenant and [User] = @Id and LoginProvider = @LoginProvider;
+
+	insert into a2security.ExternalUserLogins(Tenant, [User], LoginProvider, ProviderKey)
+	values (@Tenant, @Id, @LoginProvider, @ProviderKey);
+	commit tran;
+end
+go
+------------------------------------------------
 create or alter function a2security.fn_GetCurrentSegment()
 returns nvarchar(32)
 as
@@ -262,7 +303,8 @@ create or alter procedure a2security.[User.UpdateParts]
 @PersonName nvarchar(255) = null,
 @EmailConfirmed bit = null,
 @FirstName nvarchar(255) = null,
-@LastName nvarchar(255) = null
+@LastName nvarchar(255) = null,
+@Locale nvarchar(32) = null
 as
 begin
 	set nocount on;
@@ -271,7 +313,8 @@ begin
 	update a2security.Users set 
 		PhoneNumber = isnull(@PhoneNumber, PhoneNumber),
 		PersonName = isnull(@PersonName, PersonName),
-		EmailConfirmed = isnull(@EmailConfirmed, EmailConfirmed)
+		EmailConfirmed = isnull(@EmailConfirmed, EmailConfirmed),
+		Locale = isnull(@Locale, Locale)
 	where Id = @Id;
 end
 go
